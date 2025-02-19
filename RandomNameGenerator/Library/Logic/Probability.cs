@@ -213,7 +213,6 @@ namespace Library.Logic
             => GetRawCounts_NGram_Base(names, 4, "quadgram");
         #endregion
 
-
         #region Normalize Counts
         /// <summary>
         /// Normalizes the counts of first-letter occurrences in a dataset,
@@ -247,8 +246,8 @@ namespace Library.Logic
 
         /// <summary>
         /// Normalizes the counts of n-grams by calculating the probability
-        /// of each occurrence
-        /// within its respective prefix group.
+        /// of each occurrence within its respective prefix group and sorting the 
+        /// results in ascending order.
         /// </summary>
         /// <param name="rawCounts">A dictionary mapping n-gram keys to their raw
         /// occurrence counts.</param>
@@ -257,7 +256,7 @@ namespace Library.Logic
         public static Dictionary<NGramKey, double> 
             NormalizeCounts_NGram(Dictionary<NGramKey, int> rawCounts)
         {
-            return NormalizeCounts_Base(rawCounts, counts =>
+            var normalizedCounts = NormalizeCounts_Base(rawCounts, counts =>
             {
                 Dictionary<NGramKey, double> normalizedCounts = [];
 
@@ -272,7 +271,16 @@ namespace Library.Logic
                 }
 
                 return normalizedCounts;
-            }) ?? [];
+            });
+
+            if (normalizedCounts?.Count > 0)
+            {
+                normalizedCounts = normalizedCounts
+                    .OrderBy(kvp => kvp.Value)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+
+            return normalizedCounts ?? [];
         }
         #endregion
 
