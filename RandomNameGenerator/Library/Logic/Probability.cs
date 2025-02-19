@@ -28,14 +28,15 @@ namespace Library.Logic
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="names"/> 
         /// collection is null.</exception>
 
-        static T? GetRawCounts_Base<T>
-            (IEnumerable<string> names,
+        static T? GetRawCounts_Base<T>(
+            IEnumerable<string> names,
             Func<IEnumerable<string>, T> rawCountsFunc,
             Action<T, string>? rawCountsItem = null) where T : new()
         {
             //Is the input null
             if (names == null)
-                throw new ArgumentNullException(nameof(names), "Input enumerable cannot be null.");
+                throw new ArgumentNullException(nameof(names), 
+                    "Input enumerable cannot be null.");
 
             //Is the input empty
             if (!names.Any())
@@ -52,7 +53,6 @@ namespace Library.Logic
                 return counts;
             }
 
-            //Run the logic to get the raw counts of the input
             return rawCountsFunc(names);
         }
 
@@ -71,8 +71,9 @@ namespace Library.Logic
         /// <returns>A dictionary with NGramKey as the key (prefix and 
         /// next character) and the count as the value.</returns>
 
-        static Dictionary<NGramKey, int> 
-            GetRawCounts_NGram_Base(IEnumerable<string> names, int nGramCount, string nGramName)
+        static Dictionary<NGramKey, int> GetRawCounts_NGram_Base(
+            IEnumerable<string> names,
+            int nGramCount, string nGramName)
         {
             return GetRawCounts_Base
                 (names,
@@ -100,6 +101,44 @@ namespace Library.Logic
                         ($"Skipping name '{name}' as it is too short for {nGramName} analysis.");
                     }
                 }) ?? [];
+        }
+
+        /// <summary>
+        /// Normalizes the counts of n-gram occurrences by applying a specified
+        /// normalization function.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key in the dictionary, typically
+        /// representing an n-gram prefix.</typeparam>
+        /// <typeparam name="TResult">The type of the normalized result returned by
+        /// the function.</typeparam>
+        /// <param name="rawCounts">A dictionary containing raw occurrence counts for
+        /// each key.</param>
+        /// <param name="normalizeCountsFunc">A function that processes the raw counts
+        /// and returns a normalized result.</param>
+        /// <returns>The normalized counts as specified by the normalization function,
+        /// or default if the input is empty.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the input dictionary 
+        /// is null.</exception>
+        static TResult? NormalizeCounts_Base<TKey, TResult>(
+            Dictionary<TKey, int> rawCounts,
+            Func<Dictionary<TKey, int>,
+            TResult> normalizeCountsFunc)
+            where TKey : notnull
+        {
+            //Is the input null
+            if (rawCounts == null)
+            {
+                throw new ArgumentNullException(nameof(rawCounts), "Input dictionary cannot be null.");
+            }
+
+            //Is the input empty
+            if (rawCounts.Count == 0)
+            {
+                Console.WriteLine("Input dictionary is empty. Returning an empty result.");
+                return default;
+            }
+
+            return normalizeCountsFunc(rawCounts);
         }
         #endregion
 
@@ -174,32 +213,68 @@ namespace Library.Logic
             => GetRawCounts_NGram_Base(names, 4, "quadgram");
         #endregion
 
-#if false
+
         #region Normalize Counts
+        /// <summary>
+        /// Normalizes the counts of first-letter occurrences in a dataset,
+        /// ensuring probabilities sum to 1 and sorting the results in ascending order.
+        /// </summary>
+        /// <param name="rawCounts">A dictionary mapping characters to their raw
+        /// occurrence counts.</param>
+        /// <returns>A dictionary where each character is mapped to its normalized
+        /// probability.</returns>
         public static Dictionary<char, double>
             NormalizeCounts_FirstLetter(Dictionary<char, int> rawCounts)
         {
-            return [];
+            var normalizedCounts = NormalizeCounts_Base
+                (rawCounts,
+                input =>
+                {
+                    int total = input.Values.Sum();
+                    return input.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => (double)kvp.Value / total);
+                });
+
+            if (normalizedCounts?.Count > 0)
+            {
+                normalizedCounts = normalizedCounts
+                    .OrderBy(kvp => kvp.Value)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+            return normalizedCounts ?? [];
         }
 
-        public static Dictionary<NGramKey, double>
-            NormalizeCounts_Bigram(Dictionary<NGramKey, int> rawCounts)
+        /// <summary>
+        /// Normalizes the counts of n-grams by calculating the probability
+        /// of each occurrence
+        /// within its respective prefix group.
+        /// </summary>
+        /// <param name="rawCounts">A dictionary mapping n-gram keys to their raw
+        /// occurrence counts.</param>
+        /// <returns>A dictionary where each n-gram key is mapped to its normalized
+        /// probability.</returns>
+        public static Dictionary<NGramKey, double> 
+            NormalizeCounts_NGram(Dictionary<NGramKey, int> rawCounts)
         {
-            return [];
-        }
+            return NormalizeCounts_Base(rawCounts, counts =>
+            {
+                Dictionary<NGramKey, double> normalizedCounts = [];
 
-        public static Dictionary<NGramKey, double>
-            NormalizeCounts_Trigram(Dictionary<NGramKey, int> rawCounts)
-        {
-            return [];
-        }
+                foreach (var group in counts.GroupBy(kvp => kvp.Key.Prefix))
+                {
+                    int total = group.Sum(kvp => kvp.Value);
 
-        public static Dictionary<NGramKey, double>
-            NormalizeCounts_Quadgram(Dictionary<NGramKey, int> rawCounts)
-        {
-            return [];
+                    foreach (var kvp in group)
+                    {
+                        normalizedCounts[kvp.Key] = (double)kvp.Value / total;
+                    }
+                }
+
+                return normalizedCounts;
+            }) ?? [];
         }
-        #endregion  
-#endif
+        #endregion
+
     }
 }
