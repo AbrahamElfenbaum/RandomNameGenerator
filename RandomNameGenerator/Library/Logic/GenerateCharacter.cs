@@ -11,18 +11,6 @@ namespace Library.Logic
     class GenerateCharacter
     {
         static readonly Character[] Characters = new Character[54];
-        //static readonly Random rng = new();
-
-        static Character GenerateRandomCharacter(bool consonant, bool vowel, bool specialCharacter)
-        {
-            var validCharacters = Characters
-                .Where(c => !(consonant && c.isConsonant) || 
-                            !(vowel && c.isVowel) || 
-                            !(specialCharacter && c.isSpecialCharacter))
-                .ToArray();
-
-            return validCharacters.Length > 0 ? validCharacters[Util.RandomInt(validCharacters.Length)] : default;
-        }
 
         public static Character SelectCharacter(string prefix)
         {
@@ -71,6 +59,17 @@ namespace Library.Logic
 
             //Return a random character if no character is selected
             return GenerateRandomCharacter(true, false, false);
+        }
+
+        static Character GenerateRandomCharacter(bool consonant, bool vowel, bool specialCharacter)
+        {
+            var validCharacters = Characters
+                .Where(c => !(consonant && c.isConsonant) || 
+                            !(vowel && c.isVowel) || 
+                            !(specialCharacter && c.isSpecialCharacter))
+                .ToArray();
+
+            return validCharacters.Length > 0 ? validCharacters[Util.RandomInt(validCharacters.Length)] : default;
         }
 
         static List<NGramData> GetRelevantNGrams(string prefixLength)

@@ -9,6 +9,18 @@ namespace Library.Logic
 {
     public class Probability
     {
+        public static Dictionary<char, double> FirstLetters(IEnumerable<string> names)
+            => NormalizeCounts_FirstLetter(GetRawCounts_FirstLetter(names));
+
+        public static Dictionary<NGramKey, double> Bigrams(IEnumerable<string> names)
+            => NormalizeCounts_NGram(GetRawCounts_Bigram(names));
+
+        public static Dictionary<NGramKey, double> Trigrams(IEnumerable<string> names)
+            => NormalizeCounts_NGram(GetRawCounts_Trigram(names));
+
+        public static Dictionary<NGramKey, double> Quadgrams(IEnumerable<string> names)
+            => NormalizeCounts_NGram(GetRawCounts_Quadgram(names));
+
         #region Base
         /// <summary>
         /// Retrieves raw counts of items based on a specified function or action. 
