@@ -29,7 +29,7 @@ namespace Library.Utilities
             rng.GetBytes(numberByte);
 
             //Convert the byte array to a non-negative int
-            int numberInt = BitConverter.ToInt32(numberByte, 0) & maxExclusive;
+            int numberInt = BitConverter.ToInt32(numberByte, 0) & int.MaxValue;
 
             // Returns an integer between 0 (inclusive) and maxExclusive (exclusive)
             return numberInt % maxExclusive;
