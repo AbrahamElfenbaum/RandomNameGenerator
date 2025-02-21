@@ -16,8 +16,8 @@ namespace Library.Logic
             return extension switch
             {
                 ".txt" => ReadTextFile(filePath),
-                ".docx" => ReadWordFile(filePath),
-                ".xlsx" => ReadExcelFile(filePath),
+                ".docx" => ReadWordFile(/*filePath*/),
+                ".xlsx" => ReadExcelFile(/*filePath*/),
                 _ => throw new NotSupportedException("File format not supported."),
             };
         }
@@ -38,14 +38,14 @@ namespace Library.Logic
             return names ?? [];
         }
 
-        public static List<string> ReadWordFile(string filePath)
+        public static List<string> ReadWordFile(/*string filePath*/)
         {
             List<string> names = [];
 
             return names ?? [];
         }
 
-        public static List<string> ReadExcelFile(string filePath)
+        public static List<string> ReadExcelFile(/*string filePath*/)
         {
             return [];
         }
