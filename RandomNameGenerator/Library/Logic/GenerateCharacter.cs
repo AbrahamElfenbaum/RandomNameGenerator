@@ -72,8 +72,15 @@ namespace Library.Logic
             return validCharacters.Length > 0 ? validCharacters[Util.RandomInt(validCharacters.Length)] : default;
         }
 
-        static List<NGramData> GetRelevantNGrams(string prefixLength)
+        static List<NGramData> GetRelevantNGrams(string prefix)
         {
+            var bigram = DataBase.Bigrams
+                .Where(entry => entry.Key.Prefix.StartsWith(prefix[..1]));
+            var trigram = DataBase.Trigrams
+                .Where(entry => entry.Key.Prefix.StartsWith(prefix[..2])); ;
+            var quadgram = DataBase.Quadgrams
+                .Where(entry => entry.Key.Prefix.StartsWith(prefix[..3])); ;
+
             throw new NotImplementedException();
         }
 
