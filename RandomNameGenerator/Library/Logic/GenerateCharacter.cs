@@ -64,9 +64,9 @@ namespace Library.Logic
         static Character GenerateRandomCharacter(bool consonant, bool vowel, bool specialCharacter)
         {
             var validCharacters = Characters
-                .Where(c => !(consonant && c.isConsonant) || 
-                            !(vowel && c.isVowel) || 
-                            !(specialCharacter && c.isSpecialCharacter))
+                .Where(character => !(consonant && character.isConsonant) ||
+                                    !(vowel && character.isVowel) ||
+                                    !(specialCharacter && character.isSpecialCharacter))
                 .ToArray();
 
             return validCharacters.Length > 0 ? validCharacters[Util.RandomInt(validCharacters.Length)] : default;
