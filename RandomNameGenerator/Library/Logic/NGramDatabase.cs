@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Library.Logic
 {
-    class DataBase
+    public class NGramDatabase
     {
         public static Dictionary<char, double> FirstLetters { get; private set; } = [];
         public static Dictionary<NGramKey, double> Bigrams { get; private set; } = [];
