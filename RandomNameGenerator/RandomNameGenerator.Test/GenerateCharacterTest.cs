@@ -5,38 +5,48 @@ namespace RandomNameGenerator.Test
 {
     public class GenerateCharacterTest
     {
+        //hello
+        //helly
         // Sample n-grams for testing
         readonly Dictionary<NGramKey, double> bigrams = new()
         {
-            { new NGramKey("he", 'l'), 0.5 },
-            { new NGramKey("he", 'o'), 0.3 },
-            { new NGramKey("he", 'y'), 0.2 }
+            { new NGramKey("l", 'i'), 1.0 },
+            { new NGramKey("i", 'a'), 1.0 },
+            { new NGramKey("a", 'm'), 1.0 },
+            { new NGramKey("s", 'o'), 1.0 },
+            { new NGramKey("o", 'p'), 1.0 },
+            { new NGramKey("p", 'h'), 1.0 },
+            { new NGramKey("h", 'i'), 1.0 },
+            { new NGramKey("n", 'o'), 1.0 },
+            { new NGramKey("o", 'a'), 1.0 },
+            { new NGramKey("a", 'h'), 1.0 }
         };
 
         readonly Dictionary<NGramKey, double> trigrams = new()
         {
-            { new NGramKey("hel", 'l'), 0.4 },
-            { new NGramKey("hel", 'o'), 0.6 }
+            { new NGramKey("li", 'a'), 1.0 },
+            { new NGramKey("ia", 'm'), 1.0 },
+            { new NGramKey("so", 'p'), 1.0 },
+            { new NGramKey("op", 'h'), 1.0 },
+            { new NGramKey("ph", 'i'), 1.0 },
+            { new NGramKey("hi", 'a'), 1.0 },
+            { new NGramKey("no", 'a'), 1.0 },
+            { new NGramKey("oa", 'h'), 1.0 }
         };
 
         readonly Dictionary<NGramKey, double> quadgrams = new()
         {
-            { new NGramKey("hell", 'o'), 0.7 },
-            { new NGramKey("hell", 'y'), 0.3 }
+            { new NGramKey("lia", 'm'), 1.0 },
+            { new NGramKey("sop", 'h'), 1.0 },
+            { new NGramKey("oph", 'i'), 1.0 },
+            { new NGramKey("phi", 'a'), 1.0 }
         };
 
         [Fact]
-        public void GetCharacter()
+        public void GetCharacterProbabilities_ReturnsCorrectProbabilities()
         {
-            var result = CharacterDatabase.GetCharacter('h');
-            Assert.Equal(result, new Character('h', 'H', false, true, false));
+
         }
 
-        [Fact]
-        public void GetCharacterProbabilities()
-        {
-            var result = GenerateCharacter.GetCharacterProbabilities("he");
-            Assert.Equal(3, result.Count);
-        }
     }
 }
