@@ -5,8 +5,6 @@ namespace RandomNameGenerator.Test
 {
     public class GenerateCharacterTest
     {
-        //hello
-        //helly
         // Sample n-grams for testing
         readonly Dictionary<NGramKey, double> bigrams = new()
         {
@@ -42,11 +40,21 @@ namespace RandomNameGenerator.Test
             { new NGramKey("phi", 'a'), 1.0 }
         };
 
-        [Fact]
-        public void GetCharacterProbabilities_ReturnsCorrectProbabilities()
-        {
 
+        [Fact]
+        public void GetCharacterProbabilities_ReturnsEmpty()
+        {
+            var prob = GenerateCharacter.GetCharacterProbabilities("mia", bigrams, trigrams, quadgrams);
+            Assert.Empty(prob);
         }
 
+        [Fact]
+        public void GetCharacterProbabilities_ReturnsNonEmpty()
+        {
+            var prob = GenerateCharacter.GetCharacterProbabilities("lia", bigrams, trigrams, quadgrams);
+
+            Assert.NotEmpty(prob);   // Ensure the result is not empty
+            Assert.Contains(CharacterDatabase.GetCharacter('m'), prob.Keys); // Ensure 'm' is present
+        }
     }
 }
